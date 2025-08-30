@@ -3,20 +3,17 @@ const mongoose = require("mongoose");
 const connectdatabase = require("./config/database");
 const app = express();
 const User = require("./models/user");
-
+const bcrypt = require("bcrypt");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
+const userAuth = require("./middleware/auth");
 app.use(express.json());
+app.use(cookieParser());
+const signinroute = require("./routes/signin");
+const loginRouter = require("./routes/login");
 
-app.post("/userlogin", async (req, res) => {
-  // creating new instance of the User model
-  const user = new User(req.body);
-  console.log(user);
-  try {
-    await user.save();
-    res.send("updated user");
-  } catch (err) {
-    res.status(400).send("Error updating user");
-  }
-});
+app.use("/", signinroute);
+app.use("/", loginRouter);
 
 app.get("/userEmail", async (req, res) => {
   const Email = req.body.email;
